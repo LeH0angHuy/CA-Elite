@@ -14,27 +14,49 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
 
-        h1 {
+        .falling-text {
+            position: absolute;
             font-size: 2em;
-            text-align: center;
-            margin: 0;
-            animation: rainbow 2s infinite; /* Rainbow animation */
+            white-space: nowrap;
+            transform-origin: 50% 0;
+            animation: fall 5s linear infinite, colorChange 2s infinite alternate;
         }
 
-        @keyframes rainbow {
-            0% { color: #ff0000; } /* Red */
-            16.67% { color: #ff7f00; } /* Orange */
-            33.33% { color: #ffff00; } /* Yellow */
-            50% { color: #00ff00; } /* Green */
-            66.67% { color: #0000ff; } /* Blue */
-            83.33% { color: #4b0082; } /* Indigo */
-            100% { color: #8b00ff; } /* Violet */
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @keyframes colorChange {
+            to {
+                color: rgb(
+                    Math.floor(Math.random() * 256),
+                    Math.floor(Math.random() * 256),
+                    Math.floor(Math.random() * 256)
+                );
+            }
         }
     </style>
 </head>
 <body>
-    <h1>UNDER MAINTENANCE</h1>
+    <div class="falling-text">chôn</div>
+
+    <script>
+        // JavaScript to set initial random color
+        const fallingText = document.querySelector('.falling-text');
+
+        function getRandomColor() {
+            return `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+        }
+
+        fallingText.style.color = getRandomColor();
+    </script>
 </body>
 </html>
