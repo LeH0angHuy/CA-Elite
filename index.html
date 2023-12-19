@@ -1,97 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Maintenance</title>
-    <style>
-        body {
-            background-color: #121212; /* Dark background color */
-            color: #fff; /* Text color */
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Under Maintenance</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #121212;
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
-        .rain {
-            position: absolute;
-            font-size: 2em;
-            white-space: nowrap;
-            transform-origin: 50% 0;
-            animation: fly linear infinite, colorChange 2s infinite alternate;
-        }
+    h1 {
+      font-size: 5em;
+      text-align: center;
+      animation: rainbowText 4s infinite;
+    }
 
-        @keyframes fly {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            100% {
-                transform: translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px) rotate(360deg);
-            }
-        }
+    @keyframes rainbowText {
+      0% {
+        color: #ff0000;
+      }
 
-        @keyframes colorChange {
-            to {
-                color: rgb(
-                    Math.floor(Math.random() * 256),
-                    Math.floor(Math.random() * 256),
-                    Math.floor(Math.random() * 256)
-                );
-            }
-        }
+      16% {
+        color: #ff8000;
+      }
 
-        h1 {
-            font-size: 2em;
-            text-align: center;
-            margin: 0;
-            animation: rainbow 2s infinite; /* Rainbow animation */
-        }
+      32% {
+        color: #ffff00;
+      }
 
-        @keyframes rainbow {
-            0% { color: #ff0000; } /* Red */
-            16.67% { color: #ff7f00; } /* Orange */
-            33.33% { color: #ffff00; } /* Yellow */
-            50% { color: #00ff00; } /* Green */
-            66.67% { color: #0000ff; } /* Blue */
-            83.33% { color: #4b0082; } /* Indigo */
-            100% { color: #8b00ff; } /* Violet */
-        }
-    </style>
+      48% {
+        color: #80ff00;
+      }
+
+      64% {
+        color: #00ff00;
+      }
+
+      80% {
+        color: #00ff80;
+      }
+
+      100% {
+        color: #00ffff;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <h1>UNDER MAINTENANCE</h1>
+  <h1>UNDER MAINTENANCE</h1>
 
-    <script>
-        // JavaScript to continuously create flying "chôn" elements with chaotic properties
-        function createChon() {
-            const chon = document.createElement('div');
-            chon.textContent = 'chôn';
-            chon.classList.add('rain');
-            document.body.appendChild(chon);
+  <script>
+    (function (window) {
+      'use strict';
 
-            // Random starting position
-            chon.style.transform = `translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px)`;
+      var Chon, Chonfall;
 
-            // Random animation duration
-            chon.style.animationDuration = `${Math.random() * 10 + 5}s`;
-
-            // Random color
-            chon.style.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
-
-            chon.addEventListener('animationiteration', () => {
-                // Reset properties on animation iteration
-                chon.style.transform = `translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px)`;
-                chon.style.animationDuration = `${Math.random() * 10 + 5}s`;
-                chon.style.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
-            });
+      Chonfall = function (max) {
+        if (typeof max === "undefined") {
+          max = 100;
         }
 
-        // Create flying "chôn" elements continuously for chaos
-        setInterval(createChon, 500);
-    </script>
+        if (!window.HTMLCanvasElement) {
+          console.warn('Chonfall.js is aborting due to the browser not supporting <canvas>');
+          return;
+        }
+
+        this.max    = max;
+        this.chons = [];
+
+        this.createCanvas();
+        this.generateChons();
+        this.registerAnimation();
+        this.bindDOMEvents();
+      };
+
+      Chonfall.prototype.createCanvas = function () {
+        this.canvas = document.createElement('canvas');
+        this.canvas.width  = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.context = this.canvas.getContext('2d');
+
+        this.canvas.setAttribute('style', 'position: absolute; top: 0; left: 0; z-index: 99999; pointer-events: none');
+        document.body.appendChild(this.canvas);
+      };
+
+      Chonfall.prototype.bindDOMEvents = function () {
+        var throttle, that;
+
+        that = this;
+
+        window.addEventListener('resize', function () {
+          if (typeof throttle === "undefined") {
+            throttle = window.setTimeout(function () {
+              throttle = undefined;
+              that.canvas.width  = 1000;
+              that.canvas.height = window.innerHeight;
+            }, 100);
+          }
+        }, false);
+      };
+
+      Chonfall.prototype.generateChons = function () {
+        var i;
+
+        for (i = 0; i < this.max; i += 1) {
+          this.chons.push(new Chon(Math.floor(Math.random() * this.canvas.width), Math.floor(Math.random() * this.canvas.height)));
+        }
+      };
+
+      Chonfall.prototype.updateChons = function (delta) {
+        var i, len;
+
+        for (i = 0, len = this.chons.length; i < len; i += 1) {
+          this.chons[i].move(delta);
+
+          if (!this.chons[i].isVisible(this.canvas.width, this.canvas.height)) {
+            this.chons[i].reset(Math.floor(Math.random() * this.canvas.width), 0);
+          }
+        }
+      };
+
+      Chonfall.prototype.drawFrame = function () {
+        var i, len, chon;
+
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = '#fff';
+
+        for (i = 0, len = this.chons.length; i < len; i += 1) {
+          chon = this.chons[i];
+
+          this.context.font = chon.size + 'em Arial';  // Adjust the font size
+          this.context.fillText('chôn', chon.x, chon.y);
+        }
+      };
+
+      Chonfall.prototype.registerAnimation = function () {
+        var last_run, frame, that;
+
+        if (typeof window.requestAnimationFrame === "undefined") {
+          var requestAnimationFrame = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+          if (typeof requestAnimationFrame === "undefined") {
+            console.warn("Chonfall.js is falling back to 100ms animation intervals");
+
+            requestAnimationFrame = function (callback) {
+              return window.setTimeout(callback, 100);
+            };
+          }
+
+          window.requestAnimationFrame = requestAnimationFrame;
+        }
+
+        that     = this;
+
+        frame = function (now) {
+          if (typeof last_run === 'undefined') {
+            last_run = now;
+          }
+
+          that.updateChons(now - last_run);
+          that.drawFrame();
+
+          last_run = now;
+          that.animation = window.requestAnimationFrame(frame);
+        };
+
+        this.animation = window.requestAnimationFrame(frame);
+      };
+
+      Chonfall.prototype.removeAnimation = function () {
+        if (typeof this.animation === "undefined") {
+          return;
+        }
+
+        window.cancelAnimationFrame(this.animation);
+      };
+
+      Chon = function (x, y) {
+        this.reset(x, y);
+      };
+
+      Chon.prototype.setSpeed = function () {
+        this.speed = Math.max(0.01, Math.random() * 0.5);
+      };
+
+      Chon.prototype.setSize = function () {
+        this.size = Math.max(2, Math.floor(Math.random() * 4));  // Adjust the font size
+      };
+
+      Chon.prototype.move = function (delta) {
+        this.y += delta * this.speed;
+      };
+
+      Chon.prototype.isVisible = function (bx, by) {
+        return (this.x > 0 && this.y > 0 && this.x < bx && this.y < by);
+      };
+
+      Chon.prototype.reset = function (x, y) {
+        this.x = x;
+        this.y = y;
+        this.setSpeed();
+        this.setSize();
+      };
+
+      window.Chonfall = new Chonfall(100);
+    }(window));
+  </script>
 </body>
+
 </html>
