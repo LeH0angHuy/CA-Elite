@@ -17,20 +17,20 @@
             overflow: hidden;
         }
 
-        .falling-text {
+        .rain {
             position: absolute;
             font-size: 2em;
             white-space: nowrap;
             transform-origin: 50% 0;
-            animation: fall 5s linear infinite, colorChange 2s infinite alternate;
+            animation: fly linear infinite, colorChange 2s infinite alternate;
         }
 
-        @keyframes fall {
+        @keyframes fly {
             0% {
-                transform: translateY(0) rotate(0deg);
+                transform: translate(0, 0) rotate(0deg);
             }
             100% {
-                transform: translateY(100vh) rotate(360deg);
+                transform: translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px) rotate(360deg);
             }
         }
 
@@ -43,20 +43,55 @@
                 );
             }
         }
+
+        h1 {
+            font-size: 2em;
+            text-align: center;
+            margin: 0;
+            animation: rainbow 2s infinite; /* Rainbow animation */
+        }
+
+        @keyframes rainbow {
+            0% { color: #ff0000; } /* Red */
+            16.67% { color: #ff7f00; } /* Orange */
+            33.33% { color: #ffff00; } /* Yellow */
+            50% { color: #00ff00; } /* Green */
+            66.67% { color: #0000ff; } /* Blue */
+            83.33% { color: #4b0082; } /* Indigo */
+            100% { color: #8b00ff; } /* Violet */
+        }
     </style>
 </head>
 <body>
-    <div class="falling-text">chôn</div>
+    <h1>UNDER MAINTENANCE</h1>
 
     <script>
-        // JavaScript to set initial random color
-        const fallingText = document.querySelector('.falling-text');
+        // JavaScript to continuously create flying "chôn" elements with chaotic properties
+        function createChon() {
+            const chon = document.createElement('div');
+            chon.textContent = 'chôn';
+            chon.classList.add('rain');
+            document.body.appendChild(chon);
 
-        function getRandomColor() {
-            return `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+            // Random starting position
+            chon.style.transform = `translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px)`;
+
+            // Random animation duration
+            chon.style.animationDuration = `${Math.random() * 10 + 5}s`;
+
+            // Random color
+            chon.style.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+
+            chon.addEventListener('animationiteration', () => {
+                // Reset properties on animation iteration
+                chon.style.transform = `translate(${Math.random() * window.innerWidth}px, ${Math.random() * window.innerHeight}px)`;
+                chon.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                chon.style.color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+            });
         }
 
-        fallingText.style.color = getRandomColor();
+        // Create flying "chôn" elements continuously for chaos
+        setInterval(createChon, 500);
     </script>
 </body>
 </html>
